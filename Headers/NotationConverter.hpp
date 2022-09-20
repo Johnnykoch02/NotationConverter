@@ -5,7 +5,7 @@
 #include ".\modules\Deque.hpp" /* Conversion */
 #include <iomanip> /*String Streams*/
 #include <sstream> /* More String Streams */
-#include <vector>
+#include ".\modules\JohnAlgorithms.hpp" /* String Reversing */
 
 class Token;
 
@@ -15,13 +15,14 @@ class NotationConverter : NotationConverterInterface {
       std::string postfixToInfix(std::string inStr);
     //   std::string postfixToPrefix(std::string inStr){return std::string();}
     //   std::string infixToPostfix(std::string inStr){return std::string();}
-    //   std::string infixToPrefix(std::string inStr){return std::string();}
+      std::string infixToPrefix(std::string inStr);
     //   std::string prefixToInfix(std::string inStr){return std::string();}
     //   std::string prefixToPostfix(std::string inStr){return std::string();}
 
 
     private:
-    Deque<Token> parse(std::string inStr);
+    Deque<Token> parsePost2Inf(std::string inStr);
+    Deque<Token> parseInf2Pref(std::string inStr);
 };
 
 #endif
@@ -54,20 +55,38 @@ class Token {
 #ifndef OPERATION_H
 #define OPERATION_H
 
-typedef enum {ADD, MULT, EXP, PAR} PRECEDENCE;
+typedef enum {ADD, MULT, PAR} PRECEDENCE;
 
 class Operation: public Token {
     private:
         PRECEDENCE pr;
     public:
       
-      
-        // Operation(Token t) : Token(t) {}
-        // Operation(Token *const t): Token(t) {}
         Operation() {
             this->type = "Token.Operation";
         }
-        Operation(char val, PRECEDENCE pr) : Operation() {this->value = "";this->value+=val; this->pr = pr;}
+        Operation(char val) : Operation() {
+          this->value = "";this->value+=val;
+          switch(val) {
+            case '+':
+            case '-':
+                this->pr = ADD;
+                break;
+            case '*':
+            case '/':
+                this->pr = MULT;
+                break;
+            case ')':
+            case '(':
+               this->pr = PAR;
+                break;
+            default:
+            // throw 
+                break;
+        }  
+        
+        }
+        Operation(Token* const t) : Operation(t->toString()[0]) {}
         Operation(const Operation& copy): Operation() {this->value = copy.value; this->pr = copy.pr;}
         Operation(Operation * const copy): Operation() {this->value = copy->value; this->pr = copy->pr;}
 
@@ -79,7 +98,7 @@ class Operation: public Token {
 
 
         bool higherPrecedence(Operation * const that) {
-            return this->pr - that->pr >= 0;
+            return this->pr - that->pr > 0;
         } 
 };
 
