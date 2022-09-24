@@ -45,6 +45,10 @@ class Deque {
       }
     }
 
+    size_t getLength() {
+      return this->length;
+    }
+
     /**
      * @brief Method to add an existing program element to the Deque
      * 

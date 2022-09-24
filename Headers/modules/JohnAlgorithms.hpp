@@ -18,6 +18,25 @@ namespace john_utils {
         }
         return returnValue;
     }
+
+    inline std::string reverseParentesis(std::string str) {
+        std::string returnValue = "";
+        for (int i = 0; i < str.length(); i++) {
+            char curr = str[i];        
+            switch(curr) {
+                case ')':
+                    returnValue+="(";
+                    break;
+                case '(':
+                   returnValue+=")";
+                    break;
+                default:
+                    returnValue+=curr;
+                    break;
+                }
+        }
+        return returnValue;
+    }
  
 };
 

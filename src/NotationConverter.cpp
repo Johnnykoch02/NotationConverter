@@ -1,11 +1,78 @@
 #include "..\Headers\NotationConverter.hpp"
 
 
+std::string NotationConverter::prefixToInfix(std::string inStr) {
+    /* Initialize Variables */
+    Deque<Operation> opStack; /* Purposed for moving and manipulating the Tokens in Precedence */
+    Deque<Token> tknStack; /* For the Operands! */
+    std::string outStr = ""; /* Return String */
+    Deque<Token> tokens = this->parsePref2Inf(inStr); /* This is the tokenized rep. we need for pref->inf */
+    /*Algorithm will go through converting the Operands */
+    while ( !tokens.isEmpty() ) {
+        Token* curr = tokens.popLeft();
+        std::cout<< curr->GetType() <<"\n";
+        if (curr->GetType() == "Token.Operation") {
+            /*add this into the queue*/
+            if( tknStack.getLength() > 1) {
+                Token* val2 = tknStack.popLeft();
+                Token* val1 = tknStack.popLeft();
+                Operation* opPtr = new Operation(curr);
+                tknStack.pushLeft(new Operand(val1, val2, opPtr) );
+                delete val1;
+                delete val2;
+                delete opPtr;
+            }
+            else std::cout << "CRITICAL ERROR" <<"\n";
+        }
+        
+        else {
+            tknStack.pushLeft(curr);
+        }
+    }
+    std::string returnString = tknStack.popLeft()->toString();
+    return john_utils::reverseParentesis(john_utils::reverseString(returnString));
+}
+
+Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
+       /* Operation to reverse the following str */
+    inStr = john_utils::reverseString(inStr);
+    Deque<Token> returnVal;
+    /* Correct the tokens in the String */
+    for (int i = 0; i< inStr.length(); i++) {
+        char curr = inStr[i];
+        std::string s = "";
+        s += curr;
+        switch(curr) {
+            case '+':
+            case '-':
+                returnVal.pushRight(new Operation(curr));
+                break;
+            case '*':
+            case '/':
+                returnVal.pushRight(new Operation(curr));
+                break;
+            case ')':
+                returnVal.pushRight(new Operation(curr));
+                break;
+            case '(':
+               returnVal.pushRight(new Operation(curr));
+                break;
+            case ' ':
+                break;
+            default:
+                returnVal.pushRight(new Operand(s));
+                break;
+        }
+    }
+
+    return returnVal;
+}
+
 std::string NotationConverter::infixToPrefix(std::string inStr) {
     /* Initialize Variables */
     Deque<Operation> opStack; /* Purposed for moving and manipulating the Tokens in Precedence */
     std::string outStr = ""; /* Return String */
-    Deque<Token> tokens = this->parseInf2Pref(inStr); /* This is the tokenized rep. we need for inf->pref*/
+    Deque<Token> tokens = this->parseInf2Pref(inStr); /* This is the tokenized rep. we need for inf->pref */
     while( !tokens.isEmpty() ) {
         /* Convert to Postfix Algorithm */
         Token* curr = tokens.popLeft();
@@ -25,8 +92,9 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
                    delete opStack.popLeft();
                 }
             }
-            /* Keeps Track of reinsertion of tokens */
+            
             else {
+                /* Keeps Track of reinsertion of tokens */
                 bool inserted = false;
                 while ( !inserted ) {
                     /* Condition for Instant Push */
