@@ -16,11 +16,12 @@ class NotationConverter : NotationConverterInterface {
     //   std::string postfixToPrefix(std::string inStr){return std::string();}
     //   std::string infixToPostfix(std::string inStr){return std::string();}
       std::string infixToPrefix(std::string inStr);
-    //   std::string prefixToInfix(std::string inStr){return std::string();}
+      std::string prefixToInfix(std::string inStr);
     //   std::string prefixToPostfix(std::string inStr){return std::string();}
 
 
     private:
+    Deque<Token> parsePref2Inf(std::string inStr);
     Deque<Token> parsePost2Inf(std::string inStr);
     Deque<Token> parseInf2Pref(std::string inStr);
 };
