@@ -1,4 +1,5 @@
 #include "..\Headers\NotationConverter.hpp"
+#include <stdexcept>
 
 
 std::string NotationConverter::prefixToInfix(std::string inStr) {
@@ -40,6 +41,7 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {
@@ -66,6 +68,19 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
     }
 
     return returnVal;
+}
+
+void NotationConverter::checkValidity(char inp) {
+    switch(inp){
+        case '\\':
+        case '^':
+        case '[':
+        case ']':
+            throw std::runtime_error("Error: Invalid Character!");
+            break; 
+        default: 
+            break;
+    }
 }
 
 std::string NotationConverter::infixToPrefix(std::string inStr) {
@@ -130,9 +145,32 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
         outStr += tknPtr->toString();
         delete tknPtr;
     }
-    return john_utils::reverseString(outStr);
+    return addSpaces(john_utils::reverseString(outStr));
 }
 
+std::string addSpaces(std::string inStr) {
+    Deque<Token> tokens = parsePost2Inf(inStr);
+    std::stringstream stream;
+    Token * curr = nullptr;
+    while( !tokens.isEmpty() ) {
+        curr = tokens.popLeft();
+        stream<<curr->toString() << " ";
+    }
+    return stream.str().trim();
+}
+
+void NotationConverter::checkValidity(char inp) {
+    switch(inp){
+        case '\\':
+        case '^':
+        case '[':
+        case ']':
+            throw std::runtime_error("Error: Invalid Character!");
+            break; 
+        default: 
+            break;
+    }
+}
 
 /**q
  * @brief Token Parser for Infix to Prefix
@@ -147,6 +185,7 @@ Deque<Token> NotationConverter::parseInf2Pref(std::string inStr) {
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {
@@ -215,6 +254,7 @@ Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
     Deque<Token> returnVal;
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {

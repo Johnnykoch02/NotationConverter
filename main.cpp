@@ -12,4 +12,5 @@ int main(void) {
     std::cout << nc.infixToPostfix("( ( X + Y ) * ( A + B ) )") <<std::endl;
     std::cout << nc.prefixToPostfix("*+XY+AB") << "\n";
     std::cout << nc.postfixToPrefix("X Y + A B + *") <<std::endl;
+    std::cout << nc.prefixToInfix("^ / x y * a b") <<"\n";
 }
