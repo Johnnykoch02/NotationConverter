@@ -55,7 +55,7 @@ class Deque {
      * @param dataPtr 
      */
     void pushLeft(T* dataPtr) {
-      std::cout<<*this<<std::endl;
+      //std::cout<<*this<<std::endl;
       Node<T>* node = new Node<T>(dataPtr);
       if (nullptr == this->head) { /* n < 1 */
         this->head = node;
@@ -73,7 +73,7 @@ class Deque {
     }
     
     void pushRight(T* dataPtr) {
-      std::cout<<*this<<std::endl;
+      //std::cout<<*this<<std::endl;
       Node<T>* node = new Node<T>(dataPtr);
       if (nullptr == this->head) { /* n < 1 */
       this->head = node;
@@ -108,7 +108,7 @@ class Deque {
      */
 
     T* popLeft() {
-      std::cout<<*this<<std::endl;
+      //std::cout<<*this<<std::endl;
       /* Change the Tail, and free the old Tails memory. Reflect this change in the total. */
       if(this->length == 0) {
           throw std::runtime_error("Error: Cannot remove from empty deque...");
@@ -129,7 +129,7 @@ class Deque {
       return returnData;
     }
     T* popRight() {
-      std::cout<<*this<<std::endl;
+      //std::cout<<*this<<std::endl;
       /* Change the Tail, and free the old Tails memory. Reflect this change in the total. */
       if(this->length == 0) {
           throw std::runtime_error("Error: Cannot remove from empty deque...");

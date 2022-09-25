@@ -13,11 +13,11 @@ class NotationConverter : NotationConverterInterface {
 
     public:
       std::string postfixToInfix(std::string inStr);
-    //   std::string postfixToPrefix(std::string inStr){return std::string();}
-    //   std::string infixToPostfix(std::string inStr){return std::string();}
+      std::string postfixToPrefix(std::string inStr){return infixToPrefix(postfixToInfix(inStr));}
+      std::string infixToPostfix(std::string inStr);
       std::string infixToPrefix(std::string inStr);
       std::string prefixToInfix(std::string inStr);
-    //   std::string prefixToPostfix(std::string inStr){return std::string();}
+      std::string prefixToPostfix(std::string inStr){return infixToPostfix(prefixToInfix(inStr));}
 
 
     private:
