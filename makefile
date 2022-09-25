@@ -1,7 +1,7 @@
 all: 
-        g++ main.cpp -g -o run
-        ./run
+        g++ PP2Test.cpp ./src/NotationConverter.cpp
+        ./a
 compile:
-        g++ main.cpp .\src\NotationConverter.cpp -g -o run
+        g++ PP2Test.cpp ./src/NotationConverter.cpp
 run:
-        ./run
+        ./a

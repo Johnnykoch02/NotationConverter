@@ -30,14 +30,18 @@ std::string NotationConverter::prefixToInfix(std::string inStr) {
             tknStack.pushLeft(curr);
         }
     }
+    if (tknStack.getLength()> 1) throw std::runtime_error("Error: Invalid Expression...");
     std::string returnString = tknStack.popLeft()->toString();
-    return john_utils::reverseParentesis(john_utils::reverseString(returnString));
+    /* LOL this looks funny, but essentially reverses to infix, corrects the Parentesis
+        and then it will correct the Spacing of the String. */
+    return addSpaces(john_utils::reverseParentesis(john_utils::reverseString(returnString)));
 }
 
 Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
        /* Operation to reverse the following str */
     inStr = john_utils::reverseString(inStr);
     Deque<Token> returnVal;
+    int operands = 0, operations = 0;
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
@@ -46,11 +50,10 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
         s += curr;
         switch(curr) {
             case '+':
-            case '-':
-                returnVal.pushRight(new Operation(curr));
-                break;
+            case '-':            
             case '*':
             case '/':
+                operations++;
                 returnVal.pushRight(new Operation(curr));
                 break;
             case ')':
@@ -62,11 +65,12 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
             case ' ':
                 break;
             default:
+                operands++;
                 returnVal.pushRight(new Operand(s));
                 break;
         }
     }
-
+    if((operands-1) != operations) throw std::runtime_error("Error: Token Parsing Error! Invalid Entry.");
     return returnVal;
 }
 
@@ -148,28 +152,27 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
     return addSpaces(john_utils::reverseString(outStr));
 }
 
-std::string addSpaces(std::string inStr) {
+/**
+ * @brief This Method Is designed to add Spaces and help pass all test cases 
+ *       in the Test File.
+ * @param inStr 
+ * @return std::string 
+ */
+std::string NotationConverter::addSpaces(std::string inStr) {
     Deque<Token> tokens = parsePost2Inf(inStr);
+    bool edgeValid;
     std::stringstream stream;
     Token * curr = nullptr;
     while( !tokens.isEmpty() ) {
-        curr = tokens.popLeft();
-        stream<<curr->toString() << " ";
+        curr = tokens.popLeft(); 
+        /* This if statement contains the Logic for spacing in Infix. */
+        if ((curr->toString() == "(" /*|| curr->toString() == ")"*/) || /* String Character is a current parentesis*/
+            !tokens.isEmpty() && /*Queue isnt empty*/
+             tokens.peekLeft()->toString() == ")") /*The next character is a closing parentesis*/
+            stream<<curr->toString();
+        else stream<<curr->toString() << " ";
     }
-    return stream.str().trim();
-}
-
-void NotationConverter::checkValidity(char inp) {
-    switch(inp){
-        case '\\':
-        case '^':
-        case '[':
-        case ']':
-            throw std::runtime_error("Error: Invalid Character!");
-            break; 
-        default: 
-            break;
-    }
+    return stream.str();
 }
 
 /**q
@@ -182,6 +185,7 @@ Deque<Token> NotationConverter::parseInf2Pref(std::string inStr) {
     /* Operation to reverse the following str */
     inStr = john_utils::reverseString(inStr);
     Deque<Token> returnVal;
+    int operands = 0, operations = 0;
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
@@ -191,10 +195,9 @@ Deque<Token> NotationConverter::parseInf2Pref(std::string inStr) {
         switch(curr) {
             case '+':
             case '-':
-                returnVal.pushRight(new Operation(curr));
-                break;
             case '*':
             case '/':
+                operations++;
                 returnVal.pushRight(new Operation(curr));
                 break;
             case ')':
@@ -206,11 +209,12 @@ Deque<Token> NotationConverter::parseInf2Pref(std::string inStr) {
             case ' ':
                 break;
             default:
+                operands++;
                 returnVal.pushRight(new Operand(s));
                 break;
         }
     }
-
+    if((operands-1) != operations) throw std::runtime_error("Error: Token Parsing Error! Invalid Entry.");
     return returnVal;
 }
 
@@ -241,7 +245,7 @@ std::string NotationConverter::postfixToInfix(std::string inStr) {
        }
     }
     std::string returnString = opStack.popLeft()->toString();
-    return returnString;
+    return addSpaces(returnString);
 }
 /**
  * @brief Token Parser for Infix to Postfix
@@ -250,7 +254,7 @@ std::string NotationConverter::postfixToInfix(std::string inStr) {
  * @return Deque<Token> Parsed tokenized String for specific Operation
  */
 Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
-    /*  */
+    int operands = 0, operations = 0;
     Deque<Token> returnVal;
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
@@ -260,10 +264,9 @@ Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
         switch(curr) {
             case '+':
             case '-':
-                returnVal.pushRight(new Operation(curr));
-                break;
             case '*':
             case '/':
+                operations++;
                 returnVal.pushRight(new Operation(curr));
                 break;
             case ')':
@@ -273,11 +276,12 @@ Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
             case ' ':
                 break;
             default:
+                operands++;
                 returnVal.pushRight(new Operand(s));
                 break;
         }
     }
-
+    if((operands-1) != operations) throw std::runtime_error("Error: Token Parsing Error! Invalid Entry.");
     return returnVal;
 }
 
@@ -344,5 +348,5 @@ std::string NotationConverter::infixToPostfix(std::string inStr) {
         outStr += tknPtr->toString();
         delete tknPtr;
     }
-    return outStr;
+    return addSpaces(outStr);
 }

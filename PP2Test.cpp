@@ -13,7 +13,7 @@
 #include "catch.hpp"
 #include <string>
 
-#include ".\Implementation\NotationConverter.hpp"
+#include ".\Headers\NotationConverter.hpp" /* Correct File Location.*/
 
 TEST_CASE("Project 2 Test Cases for NotationConverter") {
   const std::string infix1 = "(A + B) ";

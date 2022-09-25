@@ -25,7 +25,7 @@ class NotationConverter : NotationConverterInterface {
     Deque<Token> parsePost2Inf(std::string inStr);
     Deque<Token> parseInf2Pref(std::string inStr);
     void checkValidity(char inp);
-    Deque<Token> addSpaces(std::string inStr);
+    std::string addSpaces(std::string inStr);
 };
 
 #endif
