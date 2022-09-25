@@ -13,17 +13,19 @@ class NotationConverter : NotationConverterInterface {
 
     public:
       std::string postfixToInfix(std::string inStr);
-    //   std::string postfixToPrefix(std::string inStr){return std::string();}
-    //   std::string infixToPostfix(std::string inStr){return std::string();}
+      std::string postfixToPrefix(std::string inStr){return infixToPrefix(postfixToInfix(inStr));}
+      std::string infixToPostfix(std::string inStr);
       std::string infixToPrefix(std::string inStr);
       std::string prefixToInfix(std::string inStr);
-    //   std::string prefixToPostfix(std::string inStr){return std::string();}
-
+      std::string prefixToPostfix(std::string inStr){return infixToPostfix(prefixToInfix(inStr));}
+      
 
     private:
     Deque<Token> parsePref2Inf(std::string inStr);
     Deque<Token> parsePost2Inf(std::string inStr);
     Deque<Token> parseInf2Pref(std::string inStr);
+    void checkValidity(char inp);
+    Deque<Token> addSpaces(std::string inStr);
 };
 
 #endif

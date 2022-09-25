@@ -1,4 +1,5 @@
 #include "..\Headers\NotationConverter.hpp"
+#include <stdexcept>
 
 
 std::string NotationConverter::prefixToInfix(std::string inStr) {
@@ -10,7 +11,7 @@ std::string NotationConverter::prefixToInfix(std::string inStr) {
     /*Algorithm will go through converting the Operands */
     while ( !tokens.isEmpty() ) {
         Token* curr = tokens.popLeft();
-        std::cout<< curr->GetType() <<"\n";
+        //std::cout<< curr->GetType() <<"\n";
         if (curr->GetType() == "Token.Operation") {
             /*add this into the queue*/
             if( tknStack.getLength() > 1) {
@@ -40,6 +41,7 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {
@@ -68,6 +70,19 @@ Deque<Token> NotationConverter::parsePref2Inf(std::string inStr) {
     return returnVal;
 }
 
+void NotationConverter::checkValidity(char inp) {
+    switch(inp){
+        case '\\':
+        case '^':
+        case '[':
+        case ']':
+            throw std::runtime_error("Error: Invalid Character!");
+            break; 
+        default: 
+            break;
+    }
+}
+
 std::string NotationConverter::infixToPrefix(std::string inStr) {
     /* Initialize Variables */
     Deque<Operation> opStack; /* Purposed for moving and manipulating the Tokens in Precedence */
@@ -76,7 +91,7 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
     while( !tokens.isEmpty() ) {
         /* Convert to Postfix Algorithm */
         Token* curr = tokens.popLeft();
-        std::cout<< curr->GetType() <<"\n";
+        //std::cout<< curr->GetType() <<"\n";
         if (curr->GetType() == "Token.Operation") {
             /* Peek the Stack to see if it has higher Precedence */
             Operation * optnPtr = new Operation(curr);
@@ -130,9 +145,32 @@ std::string NotationConverter::infixToPrefix(std::string inStr) {
         outStr += tknPtr->toString();
         delete tknPtr;
     }
-    return john_utils::reverseString(outStr);
+    return addSpaces(john_utils::reverseString(outStr));
 }
 
+std::string addSpaces(std::string inStr) {
+    Deque<Token> tokens = parsePost2Inf(inStr);
+    std::stringstream stream;
+    Token * curr = nullptr;
+    while( !tokens.isEmpty() ) {
+        curr = tokens.popLeft();
+        stream<<curr->toString() << " ";
+    }
+    return stream.str().trim();
+}
+
+void NotationConverter::checkValidity(char inp) {
+    switch(inp){
+        case '\\':
+        case '^':
+        case '[':
+        case ']':
+            throw std::runtime_error("Error: Invalid Character!");
+            break; 
+        default: 
+            break;
+    }
+}
 
 /**q
  * @brief Token Parser for Infix to Prefix
@@ -147,6 +185,7 @@ Deque<Token> NotationConverter::parseInf2Pref(std::string inStr) {
     /* Correct the tokens in the String */
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {
@@ -184,7 +223,7 @@ std::string NotationConverter::postfixToInfix(std::string inStr) {
    /* This algorithm utilizes the Null Character and Stack to append to the stream */
    while( !tokens.isEmpty() ) {
        Token* curr = tokens.popLeft();
-       std::cout<< curr->GetType() <<"\n";
+       //std::cout<< curr->GetType() <<"\n";
        /* Current Token is an Operand, push it */
        if (curr->GetType() == "Token.Operand" ) {
            opStack.pushLeft (
@@ -215,6 +254,7 @@ Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
     Deque<Token> returnVal;
     for (int i = 0; i< inStr.length(); i++) {
         char curr = inStr[i];
+        checkValidity(curr);
         std::string s = "";
         s += curr;
         switch(curr) {
@@ -241,3 +281,68 @@ Deque<Token> NotationConverter::parsePost2Inf(std::string inStr) {
     return returnVal;
 }
 
+
+std::string NotationConverter::infixToPostfix(std::string inStr) {
+    /* Initialize Variables */
+    Deque<Operation> opStack; /* Purposed for moving and manipulating the Tokens in Precedence */
+    std::string outStr = ""; /* Return String */
+    Deque<Token> tokens = this->parsePost2Inf(inStr); /* This is the tokenized rep. we need for inf->pref */
+    while( !tokens.isEmpty() ) {
+        /* Convert to Postfix Algorithm */
+        Token* curr = tokens.popLeft();
+        //std::cout<< curr->GetType() <<"\n";
+        if (curr->GetType() == "Token.Operation") {
+            /* Peek the Stack to see if it has higher Precedence */
+            Operation * optnPtr = new Operation(curr);
+            delete curr;
+            if (optnPtr->toString() == ")") {
+                /* While we have tokens in the stack and while we are in this enviornment, */
+                while( !opStack.isEmpty() && opStack.peekLeft()->toString() != "(") {
+                    Operation* tknPtr = opStack.popLeft();
+                    outStr += tknPtr->toString();
+                    delete tknPtr;
+                }
+                if( !opStack.isEmpty() ) {
+                   delete opStack.popLeft();
+                }
+            }
+            
+            else {
+                /* Keeps Track of reinsertion of tokens */
+                bool inserted = false;
+                while ( !inserted ) {
+                    /* Condition for Instant Push */
+                    if( !opStack.isEmpty() && ( /* Ensures errors have not occured... */
+                    optnPtr->higherPrecedence( opStack.peekLeft() ) || /* Either this Operand has Higher precedence, */
+                    opStack.peekLeft()->toString() == "(")) { /* Or We have entered a Parentesis Enviornment  */
+                        /* Directly Push Operand */
+                        opStack.pushLeft(optnPtr);
+                        inserted = true;
+                    }
+                    else if( !opStack.isEmpty() ) {
+                        /* Not Higher Priority, append current operand to the Out-string  */
+                        Operation* tknPtr = opStack.popLeft();
+                        outStr += tknPtr->toString();
+                        delete tknPtr;
+                    }
+                    else {
+                        /* Opstack is Empty, direct push */
+                        opStack.pushLeft(optnPtr);
+                        inserted = true;
+                    }
+                }
+
+            }
+        } /* End of == "Token.Operand "*/
+        else {
+            outStr+=curr->toString();
+            delete curr;
+        }
+    }
+    while( !opStack.isEmpty() ) {
+        Operation* tknPtr = opStack.popLeft();
+        outStr += tknPtr->toString();
+        delete tknPtr;
+    }
+    return outStr;
+}
