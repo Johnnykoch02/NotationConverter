@@ -1,6 +1,6 @@
-#include "..\Headers\NotationConverter.hpp"
 #include <stdexcept>
 
+#include "../Headers/NotationConverter.hpp"
 
 std::string NotationConverter::prefixToInfix(std::string inStr) {
     /* Initialize Variables */

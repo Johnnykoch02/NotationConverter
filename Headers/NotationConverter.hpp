@@ -1,11 +1,11 @@
 #ifndef NOTATIONCONVERTER_H
 #define NOTATIONCONVERTER_H
 
-#include "..\NotationConverterInterface.hpp" /* Interface */
-#include ".\modules\Deque.hpp" /* Conversion */
+#include "../NotationConverterInterface.hpp" /* Interface */
+#include "./modules/Deque.hpp" /* Conversion */
 #include <iomanip> /*String Streams*/
 #include <sstream> /* More String Streams */
-#include ".\modules\JohnAlgorithms.hpp" /* String Reversing */
+#include "./modules/JohnAlgorithms.hpp" /* String Reversing */
 
 class Token;
 
